@@ -1,4 +1,4 @@
-package com.example.binchecker
+package com.example.binchecker.core
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.binchecker.ui.theme.BINCheckerTheme
+import androidx.navigation.compose.rememberNavController
+import com.example.binchecker.core.navigation.AppNavScreen
+import com.example.binchecker.core.navigation.CheckCardBin
+import com.example.binchecker.presentation.ui.theme.BINCheckerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +22,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BINCheckerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val navController = rememberNavController()
+
+                AppNavScreen(
+                    navController = navController,
+                    startDestination = CheckCardBin.route
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BINCheckerTheme {
-        Greeting("Android")
     }
 }
