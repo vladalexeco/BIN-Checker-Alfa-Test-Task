@@ -1,4 +1,4 @@
-package com.example.binchecker.ui.theme
+package com.example.binchecker.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
