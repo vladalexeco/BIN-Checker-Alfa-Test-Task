@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -30,7 +29,9 @@ import androidx.compose.ui.unit.sp
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.BackgroundColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
+import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.SimpleButton
+import com.example.binchecker.presentation.ui.views.checkcardbinscreen.mockCardInfo
 
 @Composable
 fun CheckCardBinScreen() {
@@ -92,9 +93,12 @@ fun CheckCardBinScreen() {
                     onClick = {}
                 )
             }
-
-
         }
+
+        CardInfoPlate(
+            modifier = Modifier.align(Alignment.Center).padding(horizontal = 16.dp),
+            cardInfo = mockCardInfo,
+        )
 
     }
 }
