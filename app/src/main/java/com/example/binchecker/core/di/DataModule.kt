@@ -1,11 +1,17 @@
 package com.example.binchecker.core.di
 
+import android.content.Context
+import androidx.room.Room
 import com.example.binchecker.data.api.CardInfoRepositoryImpl
+import com.example.binchecker.data.api.CardInfoStorageRepositoryImpl
 import com.example.binchecker.data.network.CardInfoApiService
+import com.example.binchecker.data.storage.AppDataBase
 import com.example.binchecker.domain.api.CardInfoRepository
+import com.example.binchecker.domain.api.CardInfoStorageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -37,5 +43,21 @@ class DataModule {
     fun provideCardInfoRepository(cardInfoApiService: CardInfoApiService)
     : CardInfoRepository {
         return CardInfoRepositoryImpl(cardInfoApiService = cardInfoApiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDataBase {
+        return Room.databaseBuilder(
+            context,
+            AppDataBase::class.java,
+            "database.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCardInfoStorageRepository(appDataBase: AppDataBase) : CardInfoStorageRepository {
+        return CardInfoStorageRepositoryImpl(appDataBase)
     }
 }

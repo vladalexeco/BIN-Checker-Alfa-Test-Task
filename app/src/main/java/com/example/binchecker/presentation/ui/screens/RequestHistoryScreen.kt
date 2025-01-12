@@ -11,19 +11,42 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.binchecker.presentation.state.RequestHistoryScreenEvent
+import com.example.binchecker.presentation.state.RequestHistoryScreenState
 import com.example.binchecker.presentation.ui.theme.BackgroundColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.mockCardInfo
+import com.example.binchecker.presentation.viewmodel.RequestHistoryScreenViewModel
 
 @Composable
 fun RequestHistoryScreen() {
+
+    val viewModel: RequestHistoryScreenViewModel = hiltViewModel()
+    val state by viewModel.uiState.collectAsState()
+
+    RequestHistoryScreen(
+        state = state,
+        onEvent = { requestHistoryScreenEvent ->
+            viewModel.onEvent(requestHistoryScreenEvent)
+        }
+    )
+}
+
+@Composable
+fun RequestHistoryScreen(
+    state: RequestHistoryScreenState,
+    onEvent: (RequestHistoryScreenEvent) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +54,7 @@ fun RequestHistoryScreen() {
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -42,10 +65,10 @@ fun RequestHistoryScreen() {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 32.dp, top = 16.dp),
+                    .padding(bottom = 68.dp, top = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(listOf(mockCardInfo, mockCardInfo, mockCardInfo)) { cardInfo ->
+                items(state.cardInfoList) { cardInfo ->
                     CardInfoPlate(cardInfo = cardInfo)
                 }
             }
@@ -56,5 +79,8 @@ fun RequestHistoryScreen() {
 @Composable
 @Preview(showBackground = true)
 fun RequestHistoryScreenPreview() {
-    RequestHistoryScreen()
+    RequestHistoryScreen(
+        state = RequestHistoryScreenState(),
+        onEvent = {}
+    )
 }

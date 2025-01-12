@@ -1,7 +1,5 @@
 package com.example.binchecker.domain.model
 
-import android.icu.util.Currency
-
 data class CardInfo(
     val cardBin: String?,
     val scheme: String?,
