@@ -1,5 +1,7 @@
 package com.example.binchecker.presentation.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -12,13 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -26,15 +28,48 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.binchecker.presentation.state.CheckCardBinScreenEvent
+import com.example.binchecker.presentation.state.CheckCardBinScreenState
+import com.example.binchecker.presentation.state.RequestStatus
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.BackgroundColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
+import com.example.binchecker.presentation.ui.theme.WrongAnswerColor
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.SimpleButton
-import com.example.binchecker.presentation.ui.views.checkcardbinscreen.mockCardInfo
+import com.example.binchecker.presentation.viewmodel.CheckCardBinViewModel
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun CheckCardBinScreen() {
+
+    val viewModel: CheckCardBinViewModel = hiltViewModel()
+    val state by viewModel.uiState.collectAsState()
+
+    val navBackStackEntry = LocalLifecycleOwner.current.lifecycle.currentState
+
+    LaunchedEffect(navBackStackEntry) {
+        if (navBackStackEntry == Lifecycle.State.RESUMED) {
+            viewModel.onEvent(CheckCardBinScreenEvent.ResetState)
+        }
+    }
+
+    CheckCardBinScreen(
+        state = state,
+        onEvent = { checkCardBinScreenEvent ->
+            viewModel.onEvent(checkCardBinScreenEvent)
+        }
+    )
+}
+
+@Composable
+fun CheckCardBinScreen(
+    state: CheckCardBinScreenState,
+    onEvent: (CheckCardBinScreenEvent) -> Unit
+) {
 
     Box(
         modifier = Modifier
@@ -46,7 +81,6 @@ fun CheckCardBinScreen() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var textValue by remember { mutableStateOf("") }
 
             Text(
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -68,7 +102,7 @@ fun CheckCardBinScreen() {
                             color = AccentColor,
                             shape = RoundedCornerShape(6.dp)
                         ),
-                    value = textValue,
+                    value = state.fieldText,
                     textStyle = TextStyle(
                         color = MainTextColor,
                         fontSize = 20.sp,
@@ -83,22 +117,51 @@ fun CheckCardBinScreen() {
                         )
                     },
                     onValueChange = { newTextValue ->
-                        textValue = newTextValue
+                        onEvent.invoke(CheckCardBinScreenEvent.ChangeTextFieldValue(
+                            newValue = newTextValue
+                        ))
                     }
                 )
 
                 SimpleButton(
                     modifier = Modifier.fillMaxHeight(),
                     text = "Look Up",
-                    onClick = {}
+                    onClick = {
+                        onEvent.invoke(CheckCardBinScreenEvent.DoRequest)
+                    }
                 )
             }
         }
 
-        CardInfoPlate(
-            modifier = Modifier.align(Alignment.Center).padding(horizontal = 16.dp),
-            cardInfo = mockCardInfo,
-        )
+        when(state.networkStatus) {
+            RequestStatus.Initial -> {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "BIN Checker by Vladimir Bolshakov",
+                    style = TextStyle(fontSize = 14.sp, color = MainTextColor)
+                )
+            }
+            RequestStatus.Request -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            is RequestStatus.Success -> {
+                CardInfoPlate(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 16.dp),
+                    cardInfo = state.networkStatus.cardInfo,
+                )
+            }
+            is RequestStatus.Failure -> {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = state.networkStatus.errorMessage,
+                    style = TextStyle(fontSize = 14.sp, color = WrongAnswerColor)
+                )
+            }
+        }
 
     }
 }
@@ -106,5 +169,8 @@ fun CheckCardBinScreen() {
 @Composable
 @Preview(showBackground = true)
 fun CheckCardBinScreenPreview() {
-    CheckCardBinScreen()
+    CheckCardBinScreen(
+        state = CheckCardBinScreenState(),
+        onEvent = {}
+    )
 }

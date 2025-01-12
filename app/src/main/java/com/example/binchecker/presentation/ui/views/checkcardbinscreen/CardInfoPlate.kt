@@ -24,7 +24,7 @@ import com.example.binchecker.presentation.ui.theme.MainTextColor
 @Composable
 fun CardInfoPlate(
     modifier: Modifier = Modifier,
-    cardInfo: CardInfo,
+    cardInfo: CardInfo?,
     backgroundColor: Color = DialogBoxColor,
 ) {
     Box(
@@ -32,55 +32,59 @@ fun CardInfoPlate(
             .fillMaxWidth()
             .background(color = backgroundColor, shape = RoundedCornerShape(12.dp))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-        ) {
-            CardRow(
-                header = "Card Number/",
-                value = cardInfo.cardBin.toString()
-            )
 
-            CardRow(
-                modifier = Modifier.padding(top = 4.dp),
-                header = "Scheme/",
-                value = cardInfo.scheme
-            )
+        if (cardInfo != null) {
 
-            CardRow(
-                modifier = Modifier.padding(top = 4.dp),
-                header = "Brand/",
-                value = cardInfo.brand
-            )
-
-            CardRow(
-                modifier = Modifier.padding(top = 4.dp),
-                header = "Country/",
-                value = generateFullCountryName(
-                    countryValue = cardInfo.country,
-                    emojiValue = cardInfo.emoji,
-                    currencyValue = cardInfo.currency
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                CardRow(
+                    header = "Card Number/",
+                    value = cardInfo.cardBin.toString()
                 )
-            )
 
-            CardRow(
-                modifier = Modifier.padding(top = 4.dp),
-                header = "Coordinates/",
-                value = generateCoordinatesRow(
-                    latitudeValue = cardInfo.latitude,
-                    longitudeValue = cardInfo.longitude
+                CardRow(
+                    modifier = Modifier.padding(top = 4.dp),
+                    header = "Scheme/",
+                    value = cardInfo.scheme
                 )
-            )
 
-            BankBlock(
-                modifier = Modifier.padding(top = 8.dp),
-                header = "Bank/",
-                name = cardInfo.bankName,
-                url = cardInfo.bankUrl,
-                phone = cardInfo.bankPhone,
-                city = cardInfo.bankCity
-            )
+                CardRow(
+                    modifier = Modifier.padding(top = 4.dp),
+                    header = "Brand/",
+                    value = cardInfo.brand
+                )
+
+                CardRow(
+                    modifier = Modifier.padding(top = 4.dp),
+                    header = "Country/",
+                    value = generateFullCountryName(
+                        countryValue = cardInfo.country,
+                        emojiValue = cardInfo.emoji,
+                        currencyValue = cardInfo.currency
+                    )
+                )
+
+                CardRow(
+                    modifier = Modifier.padding(top = 4.dp),
+                    header = "Coordinates/",
+                    value = generateCoordinatesRow(
+                        latitudeValue = cardInfo.latitude,
+                        longitudeValue = cardInfo.longitude
+                    )
+                )
+
+                BankBlock(
+                    modifier = Modifier.padding(top = 8.dp),
+                    header = "Bank/",
+                    name = cardInfo.bankName,
+                    url = cardInfo.bankUrl,
+                    phone = cardInfo.bankPhone,
+                    city = cardInfo.bankCity
+                )
+            }
         }
     }
 }
@@ -108,7 +112,9 @@ fun CardRow(
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
             style = valueTextStyle,
             text = value ?: "-",
             textAlign = TextAlign.Center

@@ -55,6 +55,7 @@ dependencies {
 
     // Network
     implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     // Serialization
     implementation(libs.google.gson)
