@@ -5,22 +5,27 @@ import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.binchecker.domain.usecase.GetCardInfoUseCase
+import com.example.binchecker.domain.usecase.SaveCardInfoToDatabaseUseCase
 import com.example.binchecker.presentation.state.CheckCardBinScreenEvent
 import com.example.binchecker.presentation.state.CheckCardBinScreenState
 import com.example.binchecker.presentation.state.RequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
+import java.security.PrivateKey
 import javax.inject.Inject
 
 @HiltViewModel
 class CheckCardBinViewModel @Inject constructor(
-    private val getCardInfoUseCase: GetCardInfoUseCase
+    private val getCardInfoUseCase: GetCardInfoUseCase,
+    private val saveCardInfoToDatabaseUseCase: SaveCardInfoToDatabaseUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CheckCardBinScreenState())
@@ -43,7 +48,7 @@ class CheckCardBinViewModel @Inject constructor(
         }
     }
 
-    fun resetState(){
+    private fun resetState() {
         _uiState.value = CheckCardBinScreenState()
     }
 
@@ -70,12 +75,18 @@ class CheckCardBinViewModel @Inject constructor(
                         val cardInfo = result.getOrNull()
 
                         if (cardInfo != null) {
+
+                            val newCardInfo = cardInfo.copy(cardBin = _uiState.value.fieldText)
+
                             _uiState.update { checkCardBinScreenState ->
                                 checkCardBinScreenState.copy(
                                     networkStatus = RequestStatus.Success(
-                                        cardInfo = cardInfo.copy(cardBin = _uiState.value.fieldText)
+                                        cardInfo = newCardInfo
                                     )
                                 )
+                            }
+                            withContext(Dispatchers.IO) {
+                                saveCardInfoToDatabaseUseCase.invoke(newCardInfo)
                             }
                         } else {
                             _uiState.update { checkCardBinScreenState ->
@@ -128,9 +139,11 @@ class CheckCardBinViewModel @Inject constructor(
                 }
 
             }
+
             is IOException -> {
                 "Network Error: ${error.message}"
             }
+
             else -> {
                 "Unknown Error: ${error.message}"
             }
