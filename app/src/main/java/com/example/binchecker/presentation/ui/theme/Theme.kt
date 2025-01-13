@@ -1,4 +1,4 @@
-package com.example.binchecker.ui.theme
+package com.example.binchecker.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
