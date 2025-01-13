@@ -57,9 +57,6 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    // Serialization
-    implementation(libs.google.gson)
-
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
