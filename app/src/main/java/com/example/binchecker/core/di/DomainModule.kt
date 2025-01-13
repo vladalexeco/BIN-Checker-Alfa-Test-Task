@@ -2,6 +2,7 @@ package com.example.binchecker.core.di
 
 import com.example.binchecker.domain.api.CardInfoRepository
 import com.example.binchecker.domain.api.CardInfoStorageRepository
+import com.example.binchecker.domain.usecase.ClearCardInfoDatabaseUseCase
 import com.example.binchecker.domain.usecase.GetCardInfoUseCase
 import com.example.binchecker.domain.usecase.GetRequestHistoryFromDatabaseUseCase
 import com.example.binchecker.domain.usecase.SaveCardInfoToDatabaseUseCase
@@ -32,5 +33,12 @@ class DomainModule {
         cardInfoStorageRepository: CardInfoStorageRepository
     ): GetRequestHistoryFromDatabaseUseCase {
         return GetRequestHistoryFromDatabaseUseCase(cardInfoStorageRepository)
+    }
+
+    @Provides
+    fun provideClearCardInfoDatabaseUseCase(
+        cardInfoStorageRepository: CardInfoStorageRepository
+    ): ClearCardInfoDatabaseUseCase {
+        return ClearCardInfoDatabaseUseCase(cardInfoStorageRepository)
     }
 }

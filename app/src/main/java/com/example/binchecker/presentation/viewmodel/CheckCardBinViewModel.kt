@@ -7,29 +7,35 @@ import androidx.lifecycle.viewModelScope
 import com.example.binchecker.domain.usecase.GetCardInfoUseCase
 import com.example.binchecker.domain.usecase.SaveCardInfoToDatabaseUseCase
 import com.example.binchecker.presentation.state.CheckCardBinScreenEvent
+import com.example.binchecker.presentation.state.CheckCardBinScreenSideEffect
 import com.example.binchecker.presentation.state.CheckCardBinScreenState
 import com.example.binchecker.presentation.state.RequestStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
-import java.security.PrivateKey
 import javax.inject.Inject
 
 @HiltViewModel
 class CheckCardBinViewModel @Inject constructor(
     private val getCardInfoUseCase: GetCardInfoUseCase,
-    private val saveCardInfoToDatabaseUseCase: SaveCardInfoToDatabaseUseCase
+    private val saveCardInfoToDatabaseUseCase: SaveCardInfoToDatabaseUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CheckCardBinScreenState())
     val uiState: StateFlow<CheckCardBinScreenState> = _uiState.asStateFlow()
+
+    private val _sideEffect = MutableSharedFlow<CheckCardBinScreenSideEffect>()
+    val sideEffect: SharedFlow<CheckCardBinScreenSideEffect> = _sideEffect.asSharedFlow()
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun onEvent(checkCardBinScreenEvent: CheckCardBinScreenEvent) {
@@ -53,6 +59,7 @@ class CheckCardBinViewModel @Inject constructor(
     }
 
     private fun setTextForTextField(newText: String) {
+
         _uiState.update { checkCardBinScreenState ->
             checkCardBinScreenState.copy(
                 fieldText = newText
@@ -62,66 +69,78 @@ class CheckCardBinViewModel @Inject constructor(
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun getCardInfo(cardBin: String) {
-        _uiState.update { checkCardBinScreenState ->
-            checkCardBinScreenState.copy(
-                networkStatus = RequestStatus.Request
-            )
-        }
 
-        viewModelScope.launch {
-            getCardInfoUseCase.invoke(bin = cardBin).collect { result ->
-                when {
-                    result.isSuccess -> {
-                        val cardInfo = result.getOrNull()
+        if (cardBin.length in 6..8) {
 
-                        if (cardInfo != null) {
+            _uiState.update { checkCardBinScreenState ->
+                checkCardBinScreenState.copy(
+                    networkStatus = RequestStatus.Request
+                )
+            }
 
-                            val newCardInfo = cardInfo.copy(cardBin = _uiState.value.fieldText)
+            viewModelScope.launch {
+                getCardInfoUseCase.invoke(bin = cardBin).collect { result ->
+                    when {
+                        result.isSuccess -> {
+                            val cardInfo = result.getOrNull()
 
-                            _uiState.update { checkCardBinScreenState ->
-                                checkCardBinScreenState.copy(
-                                    networkStatus = RequestStatus.Success(
-                                        cardInfo = newCardInfo
+                            if (cardInfo != null) {
+
+                                val newCardInfo = cardInfo.copy(cardBin = _uiState.value.fieldText)
+
+                                _uiState.update { checkCardBinScreenState ->
+                                    checkCardBinScreenState.copy(
+                                        networkStatus = RequestStatus.Success(
+                                            cardInfo = newCardInfo
+                                        )
                                     )
-                                )
-                            }
-                            withContext(Dispatchers.IO) {
-                                saveCardInfoToDatabaseUseCase.invoke(newCardInfo)
-                            }
-                        } else {
-                            _uiState.update { checkCardBinScreenState ->
-                                checkCardBinScreenState.copy(
-                                    networkStatus = RequestStatus.Failure(
-                                        errorMessage = "Unknown Error: Empty response"
+                                }
+                                withContext(Dispatchers.IO) {
+                                    saveCardInfoToDatabaseUseCase.invoke(newCardInfo)
+                                }
+                            } else {
+                                _uiState.update { checkCardBinScreenState ->
+                                    checkCardBinScreenState.copy(
+                                        networkStatus = RequestStatus.Failure(
+                                            errorMessage = "Unknown Error: Empty response"
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-                    }
 
-                    result.isFailure -> {
-                        val exception = result.exceptionOrNull()
+                        result.isFailure -> {
+                            val exception = result.exceptionOrNull()
 
-                        if (exception != null) {
+                            if (exception != null) {
 
-                            val errorMessage = handleApiError(exception)
+                                val errorMessage = handleApiError(exception)
 
-                            _uiState.update { checkCardBinScreenState ->
-                                checkCardBinScreenState.copy(
-                                    networkStatus = RequestStatus.Failure(errorMessage = errorMessage)
-                                )
-                            }
-                        } else {
-                            _uiState.update { checkCardBinScreenState ->
-                                checkCardBinScreenState.copy(
-                                    networkStatus = RequestStatus.Failure(
-                                        errorMessage = "Unknown error: ..."
+                                _uiState.update { checkCardBinScreenState ->
+                                    checkCardBinScreenState.copy(
+                                        networkStatus = RequestStatus.Failure(errorMessage = errorMessage)
                                     )
-                                )
+                                }
+                            } else {
+                                _uiState.update { checkCardBinScreenState ->
+                                    checkCardBinScreenState.copy(
+                                        networkStatus = RequestStatus.Failure(
+                                            errorMessage = "Unknown error: ..."
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            }
+        } else {
+            viewModelScope.launch {
+                _sideEffect.emit(
+                    CheckCardBinScreenSideEffect.ShowMessage(
+                        "Enter the first 6 to 8 digits of a card number (BIN/IIN)"
+                    )
+                )
             }
         }
     }

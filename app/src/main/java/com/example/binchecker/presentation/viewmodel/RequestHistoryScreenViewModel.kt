@@ -1,7 +1,9 @@
 package com.example.binchecker.presentation.viewmodel
 
+import android.util.Printer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.binchecker.domain.usecase.ClearCardInfoDatabaseUseCase
 import com.example.binchecker.domain.usecase.GetRequestHistoryFromDatabaseUseCase
 import com.example.binchecker.presentation.state.RequestHistoryScreenEvent
 import com.example.binchecker.presentation.state.RequestHistoryScreenState
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RequestHistoryScreenViewModel @Inject constructor(
-    private val getRequestHistoryFromDatabaseUseCase: GetRequestHistoryFromDatabaseUseCase
+    private val getRequestHistoryFromDatabaseUseCase: GetRequestHistoryFromDatabaseUseCase,
+    private val clearCardInfoDatabaseUseCase: ClearCardInfoDatabaseUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RequestHistoryScreenState())
@@ -29,10 +32,24 @@ class RequestHistoryScreenViewModel @Inject constructor(
 
     fun onEvent(requestHistoryScreenEvent: RequestHistoryScreenEvent) {
         when (requestHistoryScreenEvent) {
-            RequestHistoryScreenEvent.GetRequestHistoryFromDatabase -> {
-                getCardInfoListFromDatabase()
+
+            RequestHistoryScreenEvent.ClearRequestHistory -> {
+
+                viewModelScope.launch {
+                    val clearJob = launch(Dispatchers.IO) {
+                        clearRequestHistory()
+                    }
+
+                    clearJob.join()
+
+                    getCardInfoListFromDatabase()
+                }
             }
         }
+    }
+
+    private suspend fun clearRequestHistory() {
+            clearCardInfoDatabaseUseCase.invoke()
     }
 
     private fun getCardInfoListFromDatabase() {
