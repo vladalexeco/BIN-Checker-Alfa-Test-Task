@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import com.example.binchecker.presentation.state.RequestHistoryScreenState
 import com.example.binchecker.presentation.ui.theme.BackgroundColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
+import com.example.binchecker.presentation.ui.views.checkcardbinscreen.SimpleButton
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.mockCardInfo
 import com.example.binchecker.presentation.viewmodel.RequestHistoryScreenViewModel
 
@@ -57,10 +59,23 @@ fun RequestHistoryScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "History of requests",
-                style = TextStyle(fontSize = 14.sp, color = MainTextColor)
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = "History of requests",
+                    style = TextStyle(fontSize = 14.sp, color = MainTextColor)
+                )
+
+                SimpleButton(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    text = "Clear",
+                    onClick = {
+                        onEvent(RequestHistoryScreenEvent.ClearRequestHistory)
+                    }
+                )
+            }
 
             LazyColumn(
                 modifier = Modifier

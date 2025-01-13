@@ -24,4 +24,8 @@ class CardInfoStorageRepositoryImpl(
         val cardInfoList = cardInfoEntityList.map { cardInfoEntity -> cardInfoEntity.toCardInfo() }
         emit(cardInfoList)
     }
+
+    override suspend fun clearCardInfoDatabase() {
+        appDataBase.getCardInfoDao().clearCardInfoDatabase()
+    }
 }

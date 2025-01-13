@@ -13,4 +13,7 @@ interface CardInfoDao {
 
     @Query("SELECT * FROM card_info_table")
     fun getRequestCardInfoHistory(): List<CardInfoEntity>
+
+    @Query("DELETE FROM card_info_table")
+    fun clearCardInfoDatabase()
 }
