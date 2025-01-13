@@ -1,6 +1,5 @@
 package com.example.binchecker.presentation.viewmodel
 
-import android.util.Printer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.binchecker.domain.usecase.ClearCardInfoDatabaseUseCase

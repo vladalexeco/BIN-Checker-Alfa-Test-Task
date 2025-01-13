@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.binchecker.R
 import com.example.binchecker.presentation.state.CheckCardBinScreenEvent
 import com.example.binchecker.presentation.state.CheckCardBinScreenSideEffect
 import com.example.binchecker.presentation.state.CheckCardBinScreenState
@@ -42,11 +44,10 @@ import com.example.binchecker.presentation.state.RequestStatus
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.BackgroundColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
-import com.example.binchecker.presentation.ui.theme.WrongAnswerColor
+import com.example.binchecker.presentation.ui.theme.AlertColor
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.SimpleButton
 import com.example.binchecker.presentation.viewmodel.CheckCardBinViewModel
-import kotlinx.coroutines.flow.collect
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -102,7 +103,7 @@ fun CheckCardBinScreen(
 
             Text(
                 modifier = Modifier.padding(bottom = 16.dp),
-                text = "Enter the first 6 to 8 digits of a card number (BIN/IIN)",
+                text = stringResource(R.string.bin_advice),
                 style = TextStyle(color = MainTextColor, fontSize = 12.sp)
             )
 
@@ -128,7 +129,7 @@ fun CheckCardBinScreen(
                     ),
                     placeholder = {
                         Text(
-                            text = "43215673",
+                            text = stringResource(R.string.bin_example),
                             style = TextStyle(fontSize = 20.sp, color = MainTextColor.copy(alpha = 0.6f)),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
@@ -144,7 +145,7 @@ fun CheckCardBinScreen(
 
                 SimpleButton(
                     modifier = Modifier.fillMaxHeight(),
-                    text = "Look Up",
+                    text = stringResource(R.string.look_up),
                     onClick = {
                         onEvent.invoke(CheckCardBinScreenEvent.DoRequest)
                     }
@@ -156,7 +157,7 @@ fun CheckCardBinScreen(
             RequestStatus.Initial -> {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = "BIN Checker by Vladimir Bolshakov",
+                    text = stringResource(R.string.bin_checker),
                     style = TextStyle(fontSize = 14.sp, color = MainTextColor)
                 )
             }
@@ -177,7 +178,7 @@ fun CheckCardBinScreen(
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = state.networkStatus.errorMessage,
-                    style = TextStyle(fontSize = 14.sp, color = WrongAnswerColor)
+                    style = TextStyle(fontSize = 14.sp, color = AlertColor)
                 )
             }
         }

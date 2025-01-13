@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.DialogBoxColor
-import com.example.binchecker.presentation.ui.theme.LightTextColor
 
 @Composable
 fun SimpleButton(
