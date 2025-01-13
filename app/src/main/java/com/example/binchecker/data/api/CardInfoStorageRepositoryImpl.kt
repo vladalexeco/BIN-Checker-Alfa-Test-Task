@@ -3,7 +3,6 @@ package com.example.binchecker.data.api
 import com.example.binchecker.data.storage.AppDataBase
 import com.example.binchecker.data.storage.model.toCardInfo
 import com.example.binchecker.data.storage.model.toCardInfoEntity
-import com.example.binchecker.domain.api.CardInfoRepository
 import com.example.binchecker.domain.api.CardInfoStorageRepository
 import com.example.binchecker.domain.model.CardInfo
 import kotlinx.coroutines.flow.Flow

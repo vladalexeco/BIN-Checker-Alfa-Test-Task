@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">BIN Checker</string>
+    <string name="bin_advice">Enter the first 6 to 8 digits of a card number (BIN/IIN)</string>
+    <string name="bin_example">43215673</string>
+    <string name="look_up">Look up</string>
+    <string name="bin_checker">BIN Checker for Alpha Company</string>
+    <string name="history_of_requests">History of requests</string>
+    <string name="clear">Clear</string>
+    <string name="search">Поиск</string>
+    <string name="history">История</string>
+    <string name="card_number">Card Number/</string>
+    <string name="scheme">Scheme/</string>
+    <string name="brand">Brand/</string>
+    <string name="country">Country/</string>
+    <string name="coordinates">Coordinates/</string>
+    <string name="bank">Bank/</string>
+    <string name="name">Name:</string>
+    <string name="url">Url:</string>
+    <string name="phone">Phone:</string>
+    <string name="city">City:</string>
 </resources>

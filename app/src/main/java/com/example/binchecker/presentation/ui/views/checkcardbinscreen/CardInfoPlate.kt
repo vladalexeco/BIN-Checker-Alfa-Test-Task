@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.binchecker.R
 import com.example.binchecker.domain.model.CardInfo
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.DialogBoxColor
@@ -46,27 +48,27 @@ fun CardInfoPlate(
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 CardRow(
-                    header = "Card Number/",
+                    header = stringResource(R.string.card_number),
                     value = "${cardInfo.cardBin}..."
                 )
 
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
-                    header = "Scheme/",
+                    header = stringResource(R.string.scheme),
                     value = cardInfo.scheme,
                     searchable = true
                 )
 
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
-                    header = "Brand/",
+                    header = stringResource(R.string.brand),
                     value = cardInfo.brand,
                     searchable = true
                 )
 
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
-                    header = "Country/",
+                    header = stringResource(R.string.country),
                     value = generateFullCountryName(
                         countryValue = cardInfo.country,
                         emojiValue = cardInfo.emoji,
@@ -77,7 +79,7 @@ fun CardInfoPlate(
 
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
-                    header = "Coordinates/",
+                    header = stringResource(R.string.coordinates),
                     value = generateCoordinatesRow(
                         latitudeValue = cardInfo.latitude,
                         longitudeValue = cardInfo.longitude
@@ -87,7 +89,7 @@ fun CardInfoPlate(
 
                 BankBlock(
                     modifier = Modifier.padding(top = 8.dp),
-                    header = "Bank/",
+                    header = stringResource(R.string.bank),
                     name = cardInfo.bankName,
                     url = cardInfo.bankUrl,
                     phone = cardInfo.bankPhone,
@@ -156,7 +158,7 @@ fun CardRow(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF312C30)
 fun CardRowPreview() {
     CardRow(header = "Header", value = "Value")
 }
@@ -186,7 +188,7 @@ fun BankBlock(
 
         Text(
             modifier = Modifier.padding(top = 8.dp, start = 12.dp),
-            text = "Name: ",
+            text = stringResource(R.string.name),
             style = subHeaderTextStyle
         )
 
@@ -210,7 +212,7 @@ fun BankBlock(
 
         Text(
             modifier = Modifier.padding(top = 4.dp, start = 12.dp),
-            text = "Url: ",
+            text = stringResource(R.string.url),
             style = subHeaderTextStyle
         )
 
@@ -234,7 +236,7 @@ fun BankBlock(
 
         Text(
             modifier = Modifier.padding(top = 4.dp, start = 12.dp),
-            text = "Phone: ",
+            text = stringResource(R.string.phone),
             style = subHeaderTextStyle
         )
 
@@ -258,7 +260,7 @@ fun BankBlock(
 
         Text(
             modifier = Modifier.padding(top = 4.dp, start = 12.dp),
-            text = "City: ",
+            text = stringResource(R.string.city),
             style = subHeaderTextStyle
         )
 
@@ -283,7 +285,7 @@ fun BankBlock(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF312C30)
 fun BankBlockPreview() {
     BankBlock(
         header = "Bank/",
@@ -305,7 +307,7 @@ fun generateFullCountryName(
 
     val result = "$country $emoji $currency"
 
-    return if (result.isEmpty()) "-" else result
+    return if (result.isBlank()) "-" else result
 }
 
 fun generateCoordinatesRow(
