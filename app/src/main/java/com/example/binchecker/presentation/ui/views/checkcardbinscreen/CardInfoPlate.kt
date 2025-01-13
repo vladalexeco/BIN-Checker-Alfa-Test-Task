@@ -1,6 +1,9 @@
 package com.example.binchecker.presentation.ui.views.checkcardbinscreen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +23,7 @@ import com.example.binchecker.domain.model.CardInfo
 import com.example.binchecker.presentation.ui.theme.AccentColor
 import com.example.binchecker.presentation.ui.theme.DialogBoxColor
 import com.example.binchecker.presentation.ui.theme.LightTextColor
+import com.example.binchecker.presentation.ui.theme.LinkColor
 import com.example.binchecker.presentation.ui.theme.MainTextColor
 
 @Composable
@@ -48,13 +53,15 @@ fun CardInfoPlate(
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
                     header = "Scheme/",
-                    value = cardInfo.scheme
+                    value = cardInfo.scheme,
+                    searchable = true
                 )
 
                 CardRow(
                     modifier = Modifier.padding(top = 4.dp),
                     header = "Brand/",
-                    value = cardInfo.brand
+                    value = cardInfo.brand,
+                    searchable = true
                 )
 
                 CardRow(
@@ -64,7 +71,8 @@ fun CardInfoPlate(
                         countryValue = cardInfo.country,
                         emojiValue = cardInfo.emoji,
                         currencyValue = cardInfo.currency
-                    )
+                    ),
+                    searchable = true
                 )
 
                 CardRow(
@@ -73,7 +81,8 @@ fun CardInfoPlate(
                     value = generateCoordinatesRow(
                         latitudeValue = cardInfo.latitude,
                         longitudeValue = cardInfo.longitude
-                    )
+                    ),
+                    searchable = true
                 )
 
                 BankBlock(
@@ -100,9 +109,13 @@ fun CardRow(
     modifier: Modifier = Modifier,
     header: String,
     value: String?,
+    searchable: Boolean = false,
     headerTextStyle: TextStyle = TextStyle(fontSize = 14.sp, color = MainTextColor),
-    valueTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = AccentColor)
+    valueTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = AccentColor),
+    linkedTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = LinkColor),
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -111,14 +124,34 @@ fun CardRow(
             style = headerTextStyle
         )
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-            style = valueTextStyle,
-            text = value ?: "-",
-            textAlign = TextAlign.Center
-        )
+        if (value != null && searchable) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        val encodedQuery = Uri.encode(value)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q=$encodedQuery")
+                        )
+                        context.startActivity(intent)
+                    }
+                    .padding(top = 4.dp),
+                style = linkedTextStyle,
+                text = value,
+                textAlign = TextAlign.Center
+            )
+        } else {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                style = valueTextStyle,
+                text = value ?: "-",
+                textAlign = TextAlign.Center
+            )
+        }
+
     }
 }
 
@@ -138,8 +171,11 @@ fun BankBlock(
     city: String?,
     headerTextStyle: TextStyle = TextStyle(fontSize = 14.sp, color = MainTextColor),
     subHeaderTextStyle: TextStyle = TextStyle(fontSize = 12.sp, color = LightTextColor),
-    valueTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = AccentColor)
+    valueTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = AccentColor),
+    linkedTextStyle: TextStyle = TextStyle(fontSize = 20.sp, color = LinkColor),
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -155,9 +191,20 @@ fun BankBlock(
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable {
+                    if (name != null) {
+                        val encodedQuery = Uri.encode(name)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q=$encodedQuery")
+                        )
+                        context.startActivity(intent)
+                    }
+                }
+                .fillMaxWidth(),
             text = name ?: "-",
-            style = valueTextStyle,
+            style = if (name != null) linkedTextStyle else valueTextStyle,
             textAlign = TextAlign.Center
         )
 
@@ -168,9 +215,20 @@ fun BankBlock(
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable {
+                    if (url != null) {
+                        val encodedQuery = Uri.encode(url)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q=$encodedQuery")
+                        )
+                        context.startActivity(intent)
+                    }
+                }
+                .fillMaxWidth(),
             text = url ?: "-",
-            style = valueTextStyle,
+            style = if (url != null) linkedTextStyle else valueTextStyle,
             textAlign = TextAlign.Center
         )
 
@@ -181,9 +239,20 @@ fun BankBlock(
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable {
+                    if (phone != null) {
+                        val encodedQuery = Uri.encode(phone)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q=$encodedQuery")
+                        )
+                        context.startActivity(intent)
+                    }
+                }
+                .fillMaxWidth(),
             text = phone ?: "-",
-            style = valueTextStyle,
+            style = if (phone != null) linkedTextStyle else valueTextStyle,
             textAlign = TextAlign.Center
         )
 
@@ -194,9 +263,20 @@ fun BankBlock(
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .clickable {
+                    if (city != null) {
+                        val encodedQuery = Uri.encode(city)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q=$encodedQuery")
+                        )
+                        context.startActivity(intent)
+                    }
+                }
+                .fillMaxWidth(),
             text = city ?: "-",
-            style = valueTextStyle,
+            style = if (city != null) linkedTextStyle else valueTextStyle,
             textAlign = TextAlign.Center
         )
     }
@@ -217,7 +297,7 @@ fun BankBlockPreview() {
 fun generateFullCountryName(
     countryValue: String?,
     emojiValue: String?,
-    currencyValue: String?
+    currencyValue: String?,
 ): String {
     val country = countryValue ?: ""
     val emoji = emojiValue ?: ""
@@ -230,8 +310,8 @@ fun generateFullCountryName(
 
 fun generateCoordinatesRow(
     latitudeValue: Int?,
-    longitudeValue: Int?
-) : String {
+    longitudeValue: Int?,
+): String {
     return if (latitudeValue == null || longitudeValue == null) "-"
     else "Latitude: $latitudeValue, Longitude: $longitudeValue"
 }

@@ -1,6 +1,7 @@
 package com.example.binchecker.presentation.ui.screens
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.binchecker.presentation.state.CheckCardBinScreenEvent
+import com.example.binchecker.presentation.state.CheckCardBinScreenSideEffect
 import com.example.binchecker.presentation.state.CheckCardBinScreenState
 import com.example.binchecker.presentation.state.RequestStatus
 import com.example.binchecker.presentation.ui.theme.AccentColor
@@ -41,10 +44,13 @@ import com.example.binchecker.presentation.ui.theme.WrongAnswerColor
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.CardInfoPlate
 import com.example.binchecker.presentation.ui.views.checkcardbinscreen.SimpleButton
 import com.example.binchecker.presentation.viewmodel.CheckCardBinViewModel
+import kotlinx.coroutines.flow.collect
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun CheckCardBinScreen() {
+
+    val context = LocalContext.current
 
     val viewModel: CheckCardBinViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
@@ -54,6 +60,16 @@ fun CheckCardBinScreen() {
     LaunchedEffect(navBackStackEntry) {
         if (navBackStackEntry == Lifecycle.State.RESUMED) {
             viewModel.onEvent(CheckCardBinScreenEvent.ResetState)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is CheckCardBinScreenSideEffect.ShowMessage -> {
+                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
