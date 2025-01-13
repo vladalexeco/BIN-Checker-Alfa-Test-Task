@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
-import java.security.PrivateKey
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,6 +59,7 @@ class CheckCardBinViewModel @Inject constructor(
     }
 
     private fun setTextForTextField(newText: String) {
+
         _uiState.update { checkCardBinScreenState ->
             checkCardBinScreenState.copy(
                 fieldText = newText

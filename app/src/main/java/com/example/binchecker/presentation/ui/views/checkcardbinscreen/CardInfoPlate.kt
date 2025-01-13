@@ -47,7 +47,7 @@ fun CardInfoPlate(
             ) {
                 CardRow(
                     header = "Card Number/",
-                    value = cardInfo.cardBin.toString()
+                    value = "${cardInfo.cardBin}..."
                 )
 
                 CardRow(
